@@ -362,13 +362,13 @@ def wrapify(text):
     for rune in text:
         if is_eol_wrappable(rune) and is_not_wrappable(prev_rune):
             new_text += rune
-            new_text += "\u200B"
+            new_text += "\u200b"
         elif prev_rune.islower() and rune.isupper():
             # lowercase to uppercase transition such as aA
-            new_text += "\u200B"
+            new_text += "\u200b"
             new_text += rune
         elif is_start_wrappable(rune) and is_not_wrappable(prev_rune):
-            new_text += "\u200B"
+            new_text += "\u200b"
             new_text += rune
         else:
             new_text += rune
