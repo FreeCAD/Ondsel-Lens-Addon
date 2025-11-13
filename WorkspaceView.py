@@ -609,12 +609,6 @@ class WorkspaceView(QtWidgets.QScrollArea):
         a5.triggered.connect(self.login_btn_clicked)
         self.guestMenu.addAction(a5)
 
-        a6 = QAction("Sign up", guestActions)
-        a6.triggered.connect(self.showOndselSignUpPage)
-        self.guestMenu.addAction(a6)
-
-        # self.guestMenu.addAction(self.newWorkspaceAction)
-
     # ####
     # Authentication
     # ####
@@ -2075,10 +2069,6 @@ class WorkspaceView(QtWidgets.QScrollArea):
 
     def ondselAccount(self):
         url = f"{Utils.env.lens_url}login"
-        self.open_url(url)
-
-    def showOndselSignUpPage(self):
-        url = f"{Utils.env.lens_url}signup"
         self.open_url(url)
 
     def refreshModel(self):
