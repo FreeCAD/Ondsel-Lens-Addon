@@ -2847,64 +2847,34 @@ class CreateDirDialog(QtGui.QDialog):
         return self.directory_input.text()
 
 
-class LoginDialog(QtGui.QDialog):
+class LoginDialog(QtWidgets.QDialog):
     def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Login")
+        super().__init__(FreeCADGui.getMainWindow())
 
-        layout = QtGui.QVBoxLayout()
-        layout.setContentsMargins(10, 10, 10, 10)
-        layout.setSpacing(20)
+        self.ui = FreeCADGui.PySideUic.loadUi(Utils.mod_path + "/LoginWidget.ui")
+        self.ui.setParent(self)
+        layout = QtWidgets.QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.ui)
 
-        self.email_label = QtGui.QLabel("Email:")
-        self.email_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.ui.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText("Login")
+        self.ui.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(False)
 
-        self.email_input = QtGui.QLineEdit()
-        self.email_input.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.ui.buttonBox.accepted.connect(self.login)
+        self.ui.buttonBox.rejected.connect(self.reject)
 
-        self.password_label = QtGui.QLabel("Password:")
-        self.password_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-
-        self.password_input = QtGui.QLineEdit()
-        self.password_input.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        self.password_input.setEchoMode(QtGui.QLineEdit.Password)
-
-        self.login_button = QtGui.QPushButton("Login")
-        self.login_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.login_button.clicked.connect(self.login)
-        self.cancel_button = QtGui.QPushButton("Cancel")
-        self.cancel_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.cancel_button.clicked.connect(self.reject)
-
-        self.login_button.setEnabled(False)
-
-        formLayout = QtGui.QFormLayout()
-        formLayout.setSpacing(5)
-        formLayout.addRow(self.email_label, self.email_input)
-        formLayout.addRow(self.password_label, self.password_input)
-
-        buttonLayout = QtGui.QHBoxLayout()
-        buttonLayout.addWidget(self.login_button)
-        buttonLayout.addWidget(self.cancel_button)
-
-        layout.addLayout(formLayout)
-        layout.addLayout(buttonLayout)
-        self.setLayout(layout)
-        self.adjustSize()
-
-        # Connect textChanged signals to enable/disable login button
-        self.email_input.textChanged.connect(self.check_credentials)
-        self.password_input.textChanged.connect(self.check_credentials)
+        self.ui.email_input.textChanged.connect(self.check_credentials)
+        self.ui.password_input.textChanged.connect(self.check_credentials)
 
     def check_credentials(self):
-        email = self.email_input.text()
-        password = self.password_input.text()
+        email = self.ui.email_input.text()
+        password = self.ui.password_input.text()
         valid_credentials = self.validate_credentials(email, password)
-        self.login_button.setEnabled(valid_credentials)
+        self.ui.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(valid_credentials)
 
     def login(self):
-        email = self.email_input.text()
-        password = self.password_input.text()
+        email = self.ui.email_input.text()
+        password = self.ui.password_input.text()
 
         # Perform login validation and authentication here
         if self.validate_credentials(email, password):
