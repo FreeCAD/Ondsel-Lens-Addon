@@ -658,6 +658,8 @@ class WorkspaceView(QtWidgets.QScrollArea):
         login_data = self.get_login_data()
         if login_data:
             access_token = login_data["accessToken"]
+            Utils.env.api_url = login_data["apiUrl"]
+            Utils.env.lens_url = login_data["lensUrl"]
             # access_token = self.generate_expired_token()
 
             if self.is_token_expired(access_token):
@@ -691,7 +693,9 @@ class WorkspaceView(QtWidgets.QScrollArea):
             # Show a login dialog to get the user's email and password
             dialog = LoginDialog()
             if dialog.exec() == QtGui.QDialog.Accepted:
-                email, password = dialog.get_credentials()
+                lens_url, api_url, email, password = dialog.get_credentials()
+                Utils.env.api_url = api_url
+                Utils.env.lens_url = lens_url
                 try:
                     self.api = APIClient(
                         self,
@@ -719,6 +723,8 @@ class WorkspaceView(QtWidgets.QScrollArea):
                     loginData = {
                         "accessToken": self.api.access_token,
                         "user": self.api.user,
+                        "lensUrl": self.api.lens_url,
+                        "apiUrl": self.api.base_url,
                     }
                     p.SetString("loginData", json.dumps(loginData))
                     self.set_ui_connectionStatus()
@@ -756,7 +762,8 @@ class WorkspaceView(QtWidgets.QScrollArea):
         self.hideBookmarks()
 
         if p.GetBool("clearCache", False):
-            shutil.rmtree(CACHE_PATH)
+            if os.path.exists(CACHE_PATH):
+                shutil.rmtree(CACHE_PATH)
             self.current_workspace = None
             self.currentWorkspaceModel = None
             self.form.fileList.setModel(None)
@@ -2870,7 +2877,9 @@ class LoginDialog(QtWidgets.QDialog):
         email = self.ui.email_input.text()
         password = self.ui.password_input.text()
         valid_credentials = self.validate_credentials(email, password)
-        self.ui.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(valid_credentials)
+        self.ui.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(
+            valid_credentials
+        )
 
     def login(self):
         email = self.ui.email_input.text()
@@ -2899,10 +2908,19 @@ class LoginDialog(QtWidgets.QDialog):
         # You can use QMessageBox or your own custom dialog implementation
         pass
 
+    def get_text_input_field(self, input_field):
+        return (
+            input_field.placeholderText()
+            if input_field.text() == ""
+            else input_field.text()
+        )
+
     def get_credentials(self):
-        email = self.email_input.text()
-        password = self.password_input.text()
-        return email, password
+        lens_url = self.get_text_input_field(self.ui.lens_url_input)
+        api_url = self.get_text_input_field(self.ui.lens_api_input)
+        email = self.ui.email_input.text()
+        password = self.ui.password_input.text()
+        return lens_url, api_url, email, password
 
 
 wsv = None

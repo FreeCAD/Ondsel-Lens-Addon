@@ -72,13 +72,16 @@ class __OndselEnv:
 
     For consistency, please use the `env` singleton declared just below. aka:
 
-        lens_site_base = Utils.env.lens_url
+        debug_level = Utils.env.get_debug_level()
     """
 
     def __init__(self):
-        self.lens_url = os.environ.get("ONDSEL_LENS_URL", "https://lens.ondsel.com/")
-        self.api_url = os.environ.get("ONDSEL_API_URL", "https://lens-api.ondsel.com/")
-        self.about_url = os.environ.get("ONDSEL_ABOUT_URL", "https://www.ondsel.com/")
+        # deprecated variables.  They are still set for backwards compatibility
+        # but are empty by default.
+        self.lens_url = ""
+        self.api_url = ""
+        self.about_url = ""
+
         self.debug_level = os.environ.get("ONDSEL_DEBUG_LEVEL", "info")
 
     def get_debug_level(self):
