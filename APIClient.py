@@ -80,6 +80,7 @@ class ConnStatus(Enum):
     LOGGED_OUT = 1  # no connection, user logged out
     CONNECTED = 2  # connection, user logged in
     DISCONNECTED = 3  # no connection, user logged in
+    NO_SERVER_SELECTED = 4  # no server selected yet
 
 
 OK = requests.codes.ok
@@ -106,7 +107,16 @@ class APIClient:
         self.source = source
         self.version = version
         self.parent = parent
-        self.status = ConnStatus.DISCONNECTED
+        self.user = None
+        self.email = None
+        self.password = None
+        self.access_token = None
+
+        if self.base_url == "":
+            self.status = ConnStatus.NO_SERVER_SELECTED
+            return
+        else:
+            self.status = ConnStatus.DISCONNECTED
 
         if access_token is None:
             self.email = email
@@ -217,6 +227,9 @@ class APIClient:
         Calls lens api root to simply check if online.
         If not online, updates status.
         """
+        if self.status == ConnStatus.NO_SERVER_SELECTED:
+            return
+
         try:
             requests.get(f"{self.base_url}/")
             if self.is_logged_in():
@@ -231,12 +244,12 @@ class APIClient:
         self._confirm_online()
         if self.status == ConnStatus.DISCONNECTED:
             raise APIClientOfflineException("Disconnected from service: logged out")
+        if self.status == ConnStatus.NO_SERVER_SELECTED:
+            raise APIClientOfflineException("No server selected")
 
     def _properly_throw_if_offline(self):
         if self.status == ConnStatus.DISCONNECTED:
-            self._confirm_online()  # try to connect again
-            if self.status == ConnStatus.DISCONNECTED:
-                raise APIClientOfflineException("Disconnected from service: logged out")
+            self._confirm_online_after_exception()
 
     def _delete(self, endpoint, headers={}, params=None):
         headers = self._set_default_headers(headers)

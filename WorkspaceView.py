@@ -357,7 +357,7 @@ class WorkspaceView(QtWidgets.QScrollArea):
 
         self.form.buttonBack.clicked.connect(self.backClicked)
 
-        self.set_anonymous_client()
+        self.initialize_api()
 
         self.workspacesModel = WorkspaceListModel(api=self.api)
         self.workspacesDelegate = WorkspaceListDelegate(self)
@@ -627,7 +627,7 @@ class WorkspaceView(QtWidgets.QScrollArea):
         """
         return self.api is not None and self.api.is_connected()
 
-    def set_anonymous_client(self):
+    def initialize_api(self):
         self.api = APIClient(
             self,
             "",
@@ -709,7 +709,7 @@ class WorkspaceView(QtWidgets.QScrollArea):
                     continue  # Present the login dialog again if authentication fails
                 except APIClientException as e:
                     logger.error(e)
-                    self.set_anonymous_client()
+                    self.initialize_api()
                     self.workspacesModel.set_api(None)
                     break
                 # Check if the request was successful (201 status code)
@@ -852,6 +852,9 @@ class WorkspaceView(QtWidgets.QScrollArea):
             elif status == ConnStatus.DISCONNECTED:
                 status_txt = "No Network Service"
                 icon = self.ondselIconDisconnected
+        elif status == ConnStatus.NO_SERVER_SELECTED:
+            icon = self.ondselIconDisconnected
+            status_txt = "No Server Selected"
         elif status == ConnStatus.LOGGED_OUT:
             icon = self.ondselIconLoggedOut
             status_txt = "Logged Out"
@@ -877,6 +880,8 @@ class WorkspaceView(QtWidgets.QScrollArea):
             self.form.userBtn.setText(name)  # api says "Local" when logged out
         elif status == ConnStatus.CONNECTED:
             self.form.userBtn.setText(name)
+        elif status == ConnStatus.NO_SERVER_SELECTED:
+            self.form.userBtn.setText("(no server selected)")
         else:  # DISCONNECTED
             self.form.userBtn.setText(name + " (disconnected)")
         self.form.userBtn.setIcon(icon)
@@ -2356,7 +2361,9 @@ class WorkspaceView(QtWidgets.QScrollArea):
             # set tab to workspaces
             tabWidget.setCurrentIndex(IDX_TAB_WORKSPACES)
 
-        elif status == ConnStatus.DISCONNECTED:
+        elif (
+            status == ConnStatus.DISCONNECTED or status == ConnStatus.NO_SERVER_SELECTED
+        ):
             # set tab to workspaces just in case cached. ondsel-start won't work anyway
             # NOTE: currently there is no way to test this as connection is not tested
             # on startup
