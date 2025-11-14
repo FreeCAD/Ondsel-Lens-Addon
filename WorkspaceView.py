@@ -61,6 +61,9 @@ from views.public_shares_view import PublicSharesView
 from views.search_results_view import SearchResultsView
 
 from components.choose_download_action_dialog import ChooseDownloadActionDialog
+from components.manage_profiles_dialog import ManageProfilesDialog
+
+from models.profile import ProfileManager
 
 from PySide.QtGui import (
     QStyledItemDelegate,
@@ -602,12 +605,34 @@ class WorkspaceView(QtWidgets.QScrollArea):
         self.userMenu.addAction(a4)
 
         # Ondsel Button's menu when user not logged in
-        self.guestMenu = QMenu(self.form.userBtn)
-        guestActions = QActionGroup(self.guestMenu)
+        self.guest_menu = QMenu(self.form.userBtn)
+        guest_actions = QActionGroup(self.guest_menu)
 
-        a5 = QAction("Login", guestActions)
-        a5.triggered.connect(self.login_btn_clicked)
-        self.guestMenu.addAction(a5)
+        self.initialize_profiles(self.guest_menu, guest_actions)
+
+    # ####
+    # Profiles
+    # ####
+
+    def initialize_profiles(self, menu, actions):
+        self.profile_manager = ProfileManager()
+
+        manage_profiles_action = QAction("Manage Profiles", actions)
+        manage_profiles_action.triggered.connect(self.manage_profile_btn_clicked)
+        menu.addAction(manage_profiles_action)
+
+        profile_action = QAction("Profile", actions)
+        profile_action.triggered.connect(self.profile_btn_clicked)
+        profile_action.setDisabled(True)
+        menu.addAction(profile_action)
+
+    def profile_btn_clicked(self):
+        logger.debug("Profile button clicked")
+        pass
+
+    def manage_profile_btn_clicked(self):
+        profiles_dialog = ManageProfilesDialog(self.profile_manager)
+        profiles_dialog.exec()
 
     # ####
     # Authentication
@@ -832,7 +857,7 @@ class WorkspaceView(QtWidgets.QScrollArea):
         status = self.api.status
         status_txt = "Starting Up"
         name = self.api.getNameUser()
-        menu = self.guestMenu
+        menu = self.guest_menu
         icon = self.ondselIconDisconnected
 
         if self.toolBarItemAction is None:

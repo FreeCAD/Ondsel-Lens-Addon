@@ -418,3 +418,9 @@ def is_share_link(url):
         and len(identifier) == 24
         and all(is_hex_digit(c) for c in identifier)
     )
+
+
+def ensure_dir_exists(dir_path):
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    return dir_path
