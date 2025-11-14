@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: 2025 Pieter Hijma <info@pieterhijma.net>
+# SPDX-License-Identifier: CC0-1.0
+repos:
+  - repo: https://github.com/psf/black
+    rev: stable
+    hooks:
+      - id: black
+        language_version: python3
+
+  - repo: local
+    hooks:
+      - id: reuse
+        name: reuse lint (FSFE reuse)
+        entry: reuse lint
+        language: python
+        additional_dependencies: ["reuse"]
+        pass_filenames: false
