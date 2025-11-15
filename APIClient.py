@@ -176,7 +176,7 @@ class APIClient:
         endpoint = "authentication"
         if not self.email:
             # if you get here, it is because you are calling a service
-            # that explictely requires auth when purposefully logged out
+            # that explictly requires auth when purposefully logged out
             raise APIClientLoggedOutException("not logged in")
 
         payload = {
@@ -382,7 +382,7 @@ class APIClient:
     def get_base_url(self):
         return self.lens_url
 
-    # User/Authentication fuctions
+    # User/Authentication functions
 
     @authRequired
     def get_user(self):
@@ -860,7 +860,7 @@ class APIClient:
             endpoint = "preferences"
             payloadHeader = "organizationId"
             payloadHeaderValue = orgId
-            message = "Initial commit perferences"
+            message = "Initial commit preferences"
 
         headers = self._set_content_type()
         payload = {
