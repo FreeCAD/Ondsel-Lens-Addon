@@ -295,7 +295,7 @@ class BookmarkDelegate(QStyledItemDelegate):
         if type == TYPE_ORG:
             name = index.data(QtCore.Qt.DisplayRole)
 
-            # Mimick the workspaces list for consistency
+            # Mimic the workspaces list for consistency
             name_font = painter.font()
             name_font.setBold(True)
 

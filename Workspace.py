@@ -313,7 +313,7 @@ class ServerWorkspaceModel(WorkspaceModel):
         self.apiClient = kwargs["apiClient"]
         self.refreshModel()
 
-        # if the folder doesnt exist, create it
+        # if the folder doesn't exist, create it
         if not os.path.exists(self.path):
             os.makedirs(self.path)
         # Create an instance of the token refresh thread

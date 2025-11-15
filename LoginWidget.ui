@@ -61,7 +61,7 @@ SPDX-License-Identifier: LGPL-2.0-or-later
         <string>The password for this Ondsel Lens instance.</string>
        </property>
        <property name="text">
-        <string>Pasword</string>
+        <string>Password</string>
        </property>
       </widget>
      </item>
