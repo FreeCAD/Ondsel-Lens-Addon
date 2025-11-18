@@ -78,6 +78,7 @@ class ProfileManager:
 
     def add_profile(self, profile: Profile):
         self.profiles.append(profile)
+        self.write_profile(profile)
 
     def delete_profile_files(self, profile: Profile):
         cache_root = Path(CACHE_PATH).resolve()
@@ -104,16 +105,19 @@ class ProfileManager:
         if self.current_profile == profile:
             self.current_profile = None
 
-    def update_profile(self, profile: Profile):
-        if profile != self.current_profile:
-            logger.error(
-                "Updating a profile that is not the current profile. This may lead to inconsistencies."
-            )
+    def write_profile(self, profile: Profile):
         profile_dir = os.path.join(CACHE_PATH, profile.name)
         Utils.ensure_dir_exists(profile_dir)
         profile_file = os.path.join(profile_dir, PROFILE_FILE_NAME)
         with open(profile_file, "w") as f:
             json.dump(asdict(profile), f, indent=2)
+
+    def update_profile(self, profile: Profile):
+        if profile != self.current_profile:
+            logger.error(
+                "Updating a profile that is not the current profile. This may lead to inconsistencies."
+            )
+        self.write_profile(profile)
 
     def get_profiles(self):
         return self.profiles

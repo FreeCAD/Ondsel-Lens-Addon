@@ -96,7 +96,8 @@ class WorkspaceModel(QAbstractListModel):
         self._id = workspaceDict["_id"]
 
         self.name = workspaceDict["name"]
-        self.path = CACHE_PATH + self._id
+        profile_path = Utils.joinPath(CACHE_PATH, kwargs.get("profile_name", ""))
+        self.path = Utils.joinPath(profile_path, self._id)
         self.subPath = kwargs.get("subPath", "")
         self.files = []
 
