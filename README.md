@@ -140,7 +140,9 @@ development of this addon as part of the [NLnet](https://nlnet.nl/) grant
 
 ## License
 
-This repository is REUSE compliant.
+This repository is [REUSE](https://reuse.software/) compliant.
+
+[![REUSE status](https://api.reuse.software/badge/github.com/FreeCAD/Ondsel-Lens-Addon)](https://api.reuse.software/info/github.com/FreeCAD/Ondsel-Lens-Addon)
 
 ## Contact
 
