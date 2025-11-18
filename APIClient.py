@@ -10,6 +10,7 @@ import json
 import urllib
 
 import Utils
+import lens_command
 from models.curation import Curation
 from models.directory import Directory
 from models.file import File
@@ -115,8 +116,8 @@ class APIClient:
         if self.base_url == "":
             self.status = ConnStatus.NO_SERVER_SELECTED
             return
-        else:
-            self.status = ConnStatus.DISCONNECTED
+
+        self.status = ConnStatus.DISCONNECTED
 
         if access_token is None:
             self.email = email
@@ -124,17 +125,22 @@ class APIClient:
             self.access_token = None
             self.user = None
             self.setStatus(ConnStatus.LOGGED_OUT)
-        else:
-            self.email = None
-            self.password = None
-            self.access_token = access_token
-            self.user = user
-            self.setStatus(ConnStatus.CONNECTED)
+            return
+
+        self.email = None
+        self.password = None
+        self.access_token = access_token
+        self.user = user
+        self.setStatus(ConnStatus.CONNECTED)
 
     def setStatus(self, newStatus):
         self.status = newStatus
-        if hasattr(self.parent, "api"):  # during parent startup; don't set status yet.
-            self.parent.set_ui_connectionStatus()
+        if (
+            hasattr(self.parent, "api")
+            and self.parent.api is not None
+            and lens_command.is_window_open()
+        ):  # during parent startup; don't set status yet.
+            self.parent.set_ui_connection_status()
 
     def getStatus(self):
         """
@@ -1075,5 +1081,8 @@ def fancy_handle(func):
         logger.error(e)
         return APICallResult.GENERAL_ERROR
     except Exception as e:
-        logger.error(e)
+        if logger.isEnabledFor(Utils.logging.DEBUG):
+            logger.exception(e)
+        else:
+            logger.error(e)
         return APICallResult.GENERAL_ERROR

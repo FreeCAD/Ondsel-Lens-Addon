@@ -44,6 +44,10 @@ def find_subwindow(main_window):
     return None
 
 
+def is_window_open() -> bool:
+    return find_subwindow(Gui.getMainWindow())
+
+
 def start_mdi_tab():
     main_window = Gui.getMainWindow()
     subwindow = find_subwindow(main_window)
