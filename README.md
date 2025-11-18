@@ -81,7 +81,7 @@ save files and access them from another location.  In addition, you can browse
 examples curated for this server (the Ondsel Start tab), browse your bookmarks,
 search for models, or view the most recent models that are shared on Lens.
 
-![image](https://github.com/user-attachments/assets/d59fb797-bdc8-44a7-b84c-dcec3a2e30a4)
+<img width="1254" height="995" alt="screenshot-workspace" src="https://github.com/user-attachments/assets/c98ac2f8-bdf4-48a6-96f6-69149ccf83d4" />
 
 ### Workspaces
 
