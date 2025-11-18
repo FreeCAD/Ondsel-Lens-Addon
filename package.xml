@@ -12,7 +12,11 @@ SPDX-License-Identifier: LGPL-2.0-or-later
   <version>2024.11.29.01</version>
   <date>2024-11-29</date>
   <maintainer email="development@ondsel.com">Ondsel Development</maintainer>
-  <license file="LICENSE">LGPL-2.0-or-later</license>
+  <license>LGPL-2.0-or-later</license>
+  <license>Apache-2.0</license>
+  <license>CC0-1.0</license>
+  <license>CC-BY-SA-2.0</license>
+  <license>CC-BY-SA-4.0</license>
   <url type="repository" branch="main">https://github.com/Ondsel-Development/Ondsel-Lens-Addon</url>
   <url type="readme">https://github.com/Ondsel-Development/Ondsel-Lens-Addon/blob/main/README.md</url>
   <icon>Resources/icons/OndselWorkbench.svg</icon>
