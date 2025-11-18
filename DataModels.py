@@ -11,7 +11,8 @@ from PySide.QtGui import QStandardItemModel, QStandardItem
 
 import FreeCAD
 
-from APIClient import fancy_handle, APICallResult
+from APIClient import fancy_handle, APICallResult, APIClientLoggedOutException
+import Utils
 
 
 CACHE_PATH = FreeCAD.getUserCachePath() + "Ondsel-Lens/"
@@ -34,17 +35,30 @@ class WorkspaceListModel(QAbstractListModel):
         parent = kwargs.get("parent", None)
         super(WorkspaceListModel, self).__init__(parent)
 
+        profile_name = kwargs.get("profile_name", None)
         self.api = kwargs["api"]
 
-        self.workspaceListFile = f"{CACHE_PATH}/workspaceList.json"
+        self.profiles = []
+        if profile_name is None:
+            self.workspaceListFile = None
+            return
+
+        self.set_profile(profile_name)
 
         self.refreshModel()
 
     def set_api(self, api):
         self.api = api
 
+    def set_profile(self, profile_name):
+        profile_dir = Utils.joinPath(CACHE_PATH, profile_name)
+        self.workspaceListFile = Utils.joinPath(profile_dir, "workspaceList.json")
+
     def refreshModel(self):
         def try_get_workspaces_connected():
+            if not self.api:
+                self.workspaces = []
+                raise APIClientLoggedOutException("No API client available")
             self.workspaces = self.api.getWorkspaces()
 
         self.beginResetModel()
@@ -109,6 +123,8 @@ class WorkspaceListModel(QAbstractListModel):
 
     def load(self):
         self.workspaces = []
+        if self.workspaceListFile is None:
+            return
         if os.path.exists(self.workspaceListFile):
             with open(self.workspaceListFile, "r") as file:
                 dataStr = file.read()
