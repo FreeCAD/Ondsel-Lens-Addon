@@ -78,6 +78,7 @@ path = [
      "integrations/reloadablefile/resources/reloadable.svg",
      "integrations/reloadablefile/resources/reloadable-ondselupdate.svg",
      "integrations/reloadablefile/resources/reloadable-orange.svg",
+     "integrations/reloadablefile/resources/reloadable-update.svg",
      "integrations/reloadablefile/resources/reloadable-update-blue-arrow.svg"
 ]
 SPDX-FileCopyrightText = [
