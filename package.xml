@@ -10,30 +10,27 @@ SPDX-License-Identifier: LGPL-2.0-or-later
   <name>Ondsel Lens Addon</name>
   <description>Workspace manager for Ondsel Lens workspaces</description>
   <version>2024.11.29.01</version>
-  <date>2024-11-29</date>
-  <maintainer email="development@ondsel.com">Ondsel Development</maintainer>
+  <date>2025-11-18</date>
+  <maintainer email="info@pieterhijma.net">Pieter Hijma</maintainer>
   <license>LGPL-2.0-or-later</license>
   <license>Apache-2.0</license>
   <license>CC0-1.0</license>
   <license>CC-BY-SA-2.0</license>
   <license>CC-BY-SA-4.0</license>
-  <url type="repository" branch="main">https://github.com/Ondsel-Development/Ondsel-Lens-Addon</url>
-  <url type="readme">https://github.com/Ondsel-Development/Ondsel-Lens-Addon/blob/main/README.md</url>
+  <url type="repository" branch="main">https://github.com/FreeCAD/Ondsel-Lens-Addon</url>
+  <url type="readme">https://github.com/FreeCAD/Ondsel-Lens-Addon/blob/main/README.md</url>
   <icon>Resources/icons/OndselWorkbench.svg</icon>
 
   <content>
     <workbench>
-      <classname>WorkspaceView</classname>
       <name>Ondsel Lens Addon</name>
-      <subdirectory>./</subdirectory>
-      <description>Workspace manager for Ondsel workspaces</description>
-      <icon>Resources/icons/OndselWorkbench.svg</icon>
+      <description>Workspace manager for Ondsel Lens workspaces</description>
+      <depend optional="False" type="automatic">pyjwt</depend>
+      <depend optional="False" type="automatic">requests</depend>
+      <depend optional="False" type="automatic">tzlocal</depend>
       <tag>developers</tag>
-
-      <!-- Python package dependencies (no support for version information) -->
-      <depend>pyjwt</depend>
-      <depend>requests</depend>
-      <depend>tzlocal</depend>
+      <icon>Resources/icons/OndselWorkbench.svg</icon>
+      <classname>WorkspaceView</classname>
     </workbench>
   </content>
 
