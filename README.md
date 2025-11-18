@@ -120,15 +120,13 @@ versions to Lens.
 
 The [Ondsel Lens server](https://github.com/FreeCAD/Ondsel-Server) is the
 server software for the cloud service `lens.ondsel.com` from company
-[Ondsel](https://web.archive.org/web/20250929053407/https://ondsel.com/) that
-was run by [Brad Collette (sliptonic)](https://www.linkedin.com/in/sliptonic).
+[Ondsel](https://web.archive.org/web/20250929053407/https://ondsel.com/). 
 This addon was shipped with Ondsel's flavor of FreeCAD called Ondsel ES and
 aimed to integrate Ondsel ES and the Lens platform.  The addon was also
 available in FreeCAD's Addon Manager.
 
-Unfortunately, Ondsel had to [shut
-down](https://web.archive.org/web/20250929053313/https://ondsel.com/blog/goodbye/)
-but since then the server software has become open source under the AGPL
+When Ondsel [ceased operations](https://web.archive.org/web/20250929053313/https://ondsel.com/blog/goodbye/),
+the server software was released open source under the AGPL
 license.  The addon had always been open source.  Both software packages and
 its documentation are now incorporated into the [FreeCAD GitHub
 organization](https://github.com/FreeCAD).
