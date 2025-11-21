@@ -9,8 +9,8 @@ SPDX-License-Identifier: LGPL-2.0-or-later
 <package format="1" xmlns="https://wiki.freecad.org/Package_Metadata">
   <name>Ondsel Lens Addon</name>
   <description>Workspace manager for Ondsel Lens workspaces</description>
-  <version>2024.11.29.01</version>
-  <date>2025-11-18</date>
+  <version>2025.11.21.01</version>
+  <date>2025-11-21</date>
   <maintainer email="info@pieterhijma.net">Pieter Hijma</maintainer>
   <license>LGPL-2.0-or-later</license>
   <license>Apache-2.0</license>

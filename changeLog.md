@@ -44,5 +44,5 @@ Large update with an MDI view with various tabs that allow browsing Lens.
 # 2024.11.29.01
 Change license from MIT to LGPL-2.0-or-later
 
-<version>
+# 2025.11.21.01
 Support switching different Lens server instances with profiles.
