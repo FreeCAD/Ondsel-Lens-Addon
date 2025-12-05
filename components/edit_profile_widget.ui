@@ -97,7 +97,7 @@ SPDX-License-Identifier: LGPL-2.0-or-later
      <item row="0" column="0">
       <widget class="QLabel" name="name_label">
        <property name="text">
-        <string>Name Profile</string>
+        <string>Profile Name</string>
        </property>
       </widget>
      </item>
