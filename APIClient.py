@@ -937,10 +937,10 @@ class APIClient:
 
         return organizations
 
-    def getOndselOrganization(self):
+    def getAdminOrganization(self):
         endpoint = "organizations"
         params = {
-            "type": "Ondsel",
+            "type": "Admin",
             "publicInfo": "true",
         }
         result = self._request(endpoint, params=params)

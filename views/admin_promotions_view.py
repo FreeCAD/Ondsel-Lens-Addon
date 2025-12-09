@@ -13,14 +13,14 @@ from qflowview.qflowview import QFlowView
 from APIClient import fancy_handle, APICallResult
 
 
-class OndselPromotionsView(QFlowView):
+class AdminPromotionsView(QFlowView):
     def __init__(self, parent=None):
-        super(OndselPromotionsView, self).__init__(parent)
+        super(AdminPromotionsView, self).__init__(parent)
         self.parent = parent
         self.promotionListModel = PromotionListModel()
         self.setItemDelegate(PromotionDelegate)
         self.setModel(self.promotionListModel)
-        self.ondsel_org = None
+        self.admin_org = None
         self.get_ondsel_and_promotions()
 
     def get_ondsel_and_promotions(self):
@@ -28,9 +28,9 @@ class OndselPromotionsView(QFlowView):
 
         def get_promoted_items():
             nonlocal promotions
-            ondsel_org = self.parent.api.getOndselOrganization()
-            self.ondsel_org = ondsel_org
-            promotions_dicts = ondsel_org["curation"]["promoted"] or []
+            admin_org = self.parent.api.getAdminOrganization()
+            self.admin_org = admin_org
+            promotions_dicts = admin_org["curation"]["promoted"] or []
             for promo in promotions_dicts:
                 new_promo = Promotion.from_json(promo)
                 new_promo.curation.parent = (
