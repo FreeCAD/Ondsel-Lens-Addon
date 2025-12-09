@@ -52,7 +52,7 @@ from Workspace import (
     FileStatus,
 )
 from markdown import markdown_to_html
-from views.ondsel_promotions_view import OndselPromotionsView
+from views.admin_promotions_view import AdminPromotionsView
 from views.public_shares_view import PublicSharesView
 
 from views.search_results_view import SearchResultsView
@@ -565,9 +565,9 @@ class WorkspaceView(QtWidgets.QScrollArea):
 
     def initializeOndselStart(self):
         self.form.ondselStartStatusLabel.setText("loading content...")
-        self.form.ondselPromotionsScrollArea = OndselPromotionsView(self)
+        self.form.ondselPromotionsScrollArea = AdminPromotionsView(self)
         html = "unable to retrieve"
-        org = self.form.ondselPromotionsScrollArea.ondsel_org
+        org = self.form.ondselPromotionsScrollArea.admin_org
         if org is not None:
             markdown = org["curation"]["longDescriptionMd"]
             html = markdown_to_html(markdown)
@@ -2455,7 +2455,7 @@ class WorkspaceView(QtWidgets.QScrollArea):
         if index == IDX_TAB_ONDSEL_START:
             if hasattr(self.form, "ondselPromotionsScrollArea"):
                 opv = self.form.ondselPromotionsScrollArea
-                if opv.ondsel_org is None:
+                if opv.admin_org is None:
                     # attempt to load the ondsel org descr/msg and promoted items
                     opv.get_ondsel_and_promotions()
         elif index == IDX_TAB_BOOKMARKS:
