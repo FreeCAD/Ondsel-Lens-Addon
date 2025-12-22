@@ -47,5 +47,5 @@ Change license from MIT to LGPL-2.0-or-later
 # 2025.11.21.01
 Support switching different Lens server instances with profiles.
 
-<version>
+# 2025.12.22.01
 Adapt to a new version of the server and some small improvements.
