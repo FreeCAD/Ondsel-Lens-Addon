@@ -214,8 +214,7 @@ def get_param_group():
 # ========================
 
 REMOTE_PACKAGE_URL = (
-    "https://raw.githubusercontent.com/Ondsel-Development/"
-    "Ondsel-Lens/master/package.xml"
+    "https://raw.githubusercontent.com/FreeCAD/Ondsel-Lens-Addon/main/package.xml"
 )
 
 
