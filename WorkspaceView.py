@@ -10,6 +10,7 @@ import requests
 import uuid
 import base64
 import webbrowser
+import urllib.parse
 import random
 import math
 
@@ -19,6 +20,7 @@ import jwt
 from jwt.exceptions import ExpiredSignatureError
 
 import handlers
+import browser_login
 from PySide import QtCore, QtGui, QtWidgets
 from PySide.QtGui import QStandardItemModel
 
@@ -833,6 +835,109 @@ class WorkspaceView(QtWidgets.QScrollArea):
         self.finish_authentication(profile)
         return False
 
+    BROWSER_LOGIN_TIMEOUT_MS = 180000
+
+    def start_browser_login(self, profile: Profile):
+        """Open the Lens desktop sign-in page in the user's browser.
+
+        The page returns the token to a loopback port this method opens. The
+        ondsel: URL scheme cannot carry it on stock FreeCAD, because reading a
+        forwarded command line needs an Ondsel ES only API. See browser_login.
+        """
+        receiver = browser_login.BrowserLoginReceiver(self)
+        try:
+            port = receiver.start()
+        except OSError as e:
+            self.report_browser_login_failure(f"a local port could not be opened ({e})")
+            return
+
+        receiver.token_received.connect(self.complete_browser_login)
+        receiver.failed.connect(self.report_browser_login_failure)
+        # Keep a reference so the receiver is not collected while serving.
+        self._browser_login_receiver = receiver
+        QtCore.QTimer.singleShot(self.BROWSER_LOGIN_TIMEOUT_MS, receiver.time_out)
+
+        base = profile.lens_url
+        if not base.endswith("/"):
+            base = base + "/"
+        query = urllib.parse.urlencode(
+            {"callback": receiver.callback_url(port), "state": receiver.state}
+        )
+        url = f"{base}desktop-login?{query}"
+        logger.debug(f"opening browser sign-in at {url}")
+        self.open_url(url)
+
+    def complete_browser_login(self, access_token):
+        """Finish a browser sign-in using the token handed back by the browser."""
+        if not access_token:
+            self.report_browser_login_failure("the browser returned no token")
+            return
+
+        profile = self.profile_manager.get_current_profile()
+        if profile is None:
+            self.to_no_profile_selected()
+            return
+
+        try:
+            expired = self.is_token_expired(access_token)
+        except Exception as e:
+            # A truncated or mangled token fails to decode here rather than at
+            # the server, so say so plainly instead of surfacing a jwt error.
+            self.report_browser_login_failure(f"the token could not be read ({e})")
+            return
+
+        if expired:
+            self.report_browser_login_failure("the token has already expired")
+            return
+
+        self.profile_manager.set_current_profile_logged_in(True)
+        if not self.attempt_authenticate_with_token(profile, access_token):
+            self.report_browser_login_failure("the server rejected the token")
+
+    def report_browser_login_failure(self, reason):
+        logger.error(f"Browser sign-in failed: {reason}")
+        QtWidgets.QMessageBox.warning(
+            self,
+            "Sign in with browser",
+            f"Signing in through the browser did not complete because {reason}.",
+        )
+
+    def attempt_authenticate_with_token(self, profile: Profile, access_token):
+        try:
+            self.api = APIClient(
+                self,
+                "",
+                "",
+                profile.api_url,
+                profile.lens_url,
+                Utils.get_source_api_request(),
+                Utils.get_version_source_api_request(),
+            )
+            self.set_ui_connection_status()
+            # do not forget to set the API for the workspacesModel
+            self.workspacesModel.set_api(self.api)
+            self.workspacesModel.set_profile(profile.name)
+            self.api.authenticate_with_token(access_token)
+        except APIClientAuthenticationException as e:
+            logger.warn(e)
+            return False
+        except APIClientException as e:
+            logger.error(e)
+            self.initialize_anonymous_api()
+            self.workspacesModel.set_api(None)
+            return False
+
+        if self.api.access_token is None:
+            logger.warn("Authentication failed")
+            return False
+
+        # the email on the profile may be blank, or may differ from the account
+        # the user actually signed in with through the provider
+        if self.api.email:
+            profile.email = self.api.email
+        self.finish_authentication(profile)
+        return True
+
     def prompt_for_login(self):
         profile = self.profile_manager.get_current_profile()
         if profile is None:
@@ -849,6 +954,10 @@ class WorkspaceView(QtWidgets.QScrollArea):
         result = dialog.exec()
 
         if result == QtGui.QDialog.Rejected:
+            return False
+
+        if dialog.wants_browser():
+            self.start_browser_login(profile)
             return False
 
         return self.attempt_authenticate(profile, dialog.get_password())
@@ -2576,6 +2685,10 @@ class WorkspaceView(QtWidgets.QScrollArea):
         try:
             if url.startswith(prefix):
                 stripped_url = url[len(prefix) :]
+                # A browser may hand back the authority form, "ondsel://share/x"
+                # rather than "ondsel:share/x". Splitting that on "/" yields an
+                # empty sub_scheme, so normalise it away first.
+                stripped_url = stripped_url.lstrip("/")
                 result = stripped_url.split("/")
                 sub_scheme = result[0]
                 if len(result) > 1:
@@ -2631,12 +2744,17 @@ class WorkspaceView(QtWidgets.QScrollArea):
             self.handle_download(
                 lambda: handlers.download_shared_model_to_memory(self.api, id1)
             )
-        else:
+        elif sub_scheme == "file":
             self.handle_download(
                 lambda: handlers.download_file_version_to_memory(
                     self.api, id1, id2, True
                 )
             )
+        else:
+            # parse_url logs the reason and answers (None, None, None) rather
+            # than raising, so without this the file branch ran with empty ids
+            # and reported a download failure for a URL that never parsed.
+            logger.error(f"Cannot handle URL: {url}")
 
 
 # class NewWorkspaceDialog(QtGui.QDialog):

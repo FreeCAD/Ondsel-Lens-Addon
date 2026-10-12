@@ -207,6 +207,28 @@ class APIClient:
         self.user = data["user"]
         self.setStatus(ConnStatus.CONNECTED)
 
+    def authenticate_with_token(self, access_token):
+        """Authenticate with an existing Lens access token.
+
+        Used by the browser sign-in flow. Accounts created through an OAuth or
+        OIDC provider have no local password, so the "local" strategy below can
+        never authenticate them. The server registers Feathers' "jwt" strategy
+        alongside "local", which exchanges a token the browser already obtained
+        for a fresh one plus the user record.
+        """
+        endpoint = "authentication"
+        payload = {
+            "strategy": "jwt",
+            "accessToken": access_token,
+        }
+
+        headers = self._set_content_type()
+        data = self._post(endpoint, headers=headers, data=json.dumps(payload))
+        self.access_token = data["accessToken"]
+        self.user = data["user"]
+        self.email = self.user.get("email")
+        self.setStatus(ConnStatus.CONNECTED)
+
     def _raiseException(self, response, **kwargs):
         "Raise a generic exception based on the status code"
         # dumps only when debugging is enabled

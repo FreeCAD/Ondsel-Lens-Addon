@@ -26,6 +26,8 @@ class LoginDialog(QDialog):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.ui)
 
+        self.use_browser = False
+
         self.ui.profile_label.setText(profile_name)
         self.ui.lens_url_value.setText(lens_url)
         self.ui.api_url_value.setText(api_url)
@@ -33,6 +35,18 @@ class LoginDialog(QDialog):
 
         self.ui.buttonBox.button(QDialogButtonBox.Ok).setText("Login")
         self.ui.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
+
+        # Accounts created through an OAuth or OIDC provider have no local
+        # password, so the password field alone cannot sign them in. Offer the
+        # browser instead; it can use whichever provider the server offers.
+        self.browser_button = self.ui.buttonBox.addButton(
+            "Sign in with browser", QDialogButtonBox.ActionRole
+        )
+        self.browser_button.setToolTip(
+            "Sign in through your browser. Use this for accounts created with "
+            "GitHub, Google or another single sign-on provider."
+        )
+        self.browser_button.clicked.connect(self._choose_browser)
 
         self.ui.buttonBox.accepted.connect(self.accept)
         self.ui.buttonBox.rejected.connect(self.reject)
@@ -42,6 +56,13 @@ class LoginDialog(QDialog):
     def check_credentials(self):
         password = self.ui.password_input.text()
         self.ui.buttonBox.button(QDialogButtonBox.Ok).setEnabled(password != "")
+
+    def _choose_browser(self):
+        self.use_browser = True
+        self.accept()
+
+    def wants_browser(self):
+        return self.use_browser
 
     def get_password(self):
         return self.ui.password_input.text()
